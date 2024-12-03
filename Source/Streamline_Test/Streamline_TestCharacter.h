@@ -49,7 +49,7 @@ protected:
 	virtual void BeginPlay();
 
 public:
-		
+	virtual void Tick(float DeltaTime) override;
 	/** Look Input Action */
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Input, meta = (AllowPrivateAccess = "true"))
 	class UInputAction* LookAction;

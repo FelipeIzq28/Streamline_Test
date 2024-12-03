@@ -22,6 +22,7 @@ DEFINE_LOG_CATEGORY(LogTemplateCharacter);
 
 AStreamline_TestCharacter::AStreamline_TestCharacter()
 {
+	PrimaryActorTick.bCanEverTick = true;
 	// Set size for collision capsule
 	GetCapsuleComponent()->InitCapsuleSize(55.f, 96.0f);
 		
@@ -58,6 +59,29 @@ void AStreamline_TestCharacter::BeginPlay()
 	}
 }
 
+void AStreamline_TestCharacter::Tick(float DeltaTime)
+{
+	Super::Tick(DeltaTime);
+
+	UPhysicsHandleComponent* PhysicsHandle = GetPhysicsHandle();
+	if (PhysicsHandle && PhysicsHandle->GetGrabbedComponent())
+	{
+		FVector PlayerViewPointLocation;
+		FRotator PlayerViewPointRotation;
+
+		// Obtén la ubicación y rotación de la cámara del jugador
+		GetWorld()->GetFirstPlayerController()->GetPlayerViewPoint(PlayerViewPointLocation, PlayerViewPointRotation);
+
+		// Calcula la posición objetivo para el objeto agarrado
+		FVector TargetLocation = PlayerViewPointLocation + PlayerViewPointRotation.Vector() * HoldDistance;
+
+		// Actualiza la posición y rotación del Physics Handle
+		PhysicsHandle->SetTargetLocationAndRotation(TargetLocation, PlayerViewPointRotation);
+	}
+}
+
+
+
 //////////////////////////////////////////////////////////////////////////// Input
 
 void AStreamline_TestCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
@@ -75,7 +99,7 @@ void AStreamline_TestCharacter::SetupPlayerInputComponent(UInputComponent* Playe
 		// Looking
 		EnhancedInputComponent->BindAction(LookAction, ETriggerEvent::Triggered, this, &AStreamline_TestCharacter::Look);
 
-		EnhancedInputComponent->BindAction(GrabAction, ETriggerEvent::Triggered, this, &AStreamline_TestCharacter::Grab);
+		EnhancedInputComponent->BindAction(GrabAction, ETriggerEvent::Started, this, &AStreamline_TestCharacter::Grab);
 		EnhancedInputComponent->BindAction(GrabAction, ETriggerEvent::Completed, this, &AStreamline_TestCharacter::ReleaseObject);
 	}
 	else
@@ -133,7 +157,7 @@ void AStreamline_TestCharacter::Grab(const FInputActionValue& Value)
 			HitComponent,
 			NAME_None,
 			HitResult.ImpactPoint,
-			GetActorRotation()
+			HitComponent->GetComponentRotation()
 		);
 
 	}
@@ -144,9 +168,22 @@ void AStreamline_TestCharacter::ReleaseObject(const FInputActionValue& Value)
 
 	if (PhysicsHandle && PhysicsHandle->GetGrabbedComponent())
 	{
-		AActor* GrabbedActor = PhysicsHandle->GetGrabbedComponent()->GetOwner();
-		GrabbedActor->Tags.Remove("Grabbed");
+		UPrimitiveComponent* GrabbedComponent = PhysicsHandle->GetGrabbedComponent();
+		AActor* GrabbedActor = GrabbedComponent->GetOwner();
+
+		if (GrabbedActor)
+		{
+			// Remover etiqueta "Grabbed"
+			GrabbedActor->Tags.Remove("Grabbed");
+			UE_LOG(LogTemp, Display, TEXT("Released Actor: %s"), *GrabbedActor->GetActorNameOrLabel());
+		}
+
+		// Liberar el componente del PhysicsHandle
 		PhysicsHandle->ReleaseComponent();
+	}
+	else
+	{
+		UE_LOG(LogTemp, Warning, TEXT("No component to release."));
 	}
 }
 UPhysicsHandleComponent* AStreamline_TestCharacter::GetPhysicsHandle() const
@@ -161,8 +198,14 @@ UPhysicsHandleComponent* AStreamline_TestCharacter::GetPhysicsHandle() const
 
 bool AStreamline_TestCharacter::GetGrabbableInReach(FHitResult& OutHitResult) const
 {
-	FVector Start = GetActorLocation();
-	FVector End = Start + GetActorForwardVector() * MaxGrabDistance;
+	FVector PlayerViewpointLocation;
+	FRotator PlayerViewpointRotation;
+
+	GetWorld()->GetFirstPlayerController()->GetPlayerViewPoint(PlayerViewpointLocation, PlayerViewpointRotation);
+
+	// Calcula el vector final basado en la dirección en que mira el jugador
+	FVector Start = PlayerViewpointLocation;
+	FVector End = Start + PlayerViewpointRotation.Vector() * MaxGrabDistance;
 	DrawDebugLine(GetWorld(), Start, End, FColor::Red);
 	DrawDebugSphere(GetWorld(), End, 10, 10, FColor::Blue, false, 5);
 
