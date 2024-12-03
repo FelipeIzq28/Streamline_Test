@@ -1,0 +1,122 @@
+[
+	{
+		"file": "P:\\Unreal Projects\\Streamline_Test\\Source\\Streamline_Test\\Streamline_Test.Build.cs",
+		"arguments": [
+			"C:\\Program Files\\Microsoft Visual Studio\\2022\\Community\\VC\\Tools\\MSVC\\14.36.32532\\bin\\Hostx64\\x64\\cl.exe",
+			"@P:\\Unreal Projects\\Streamline_Test\\.vscode\\compileCommands_Streamline_Test\\Streamline_Test.1.rsp"
+		],
+		"directory": "P:\\Epic Games\\UE_5.4\\Engine\\Source"
+	},
+	{
+		"file": "P:\\Unreal Projects\\Streamline_Test\\Source\\Streamline_Test\\Streamline_Test.cpp",
+		"arguments": [
+			"C:\\Program Files\\Microsoft Visual Studio\\2022\\Community\\VC\\Tools\\MSVC\\14.36.32532\\bin\\Hostx64\\x64\\cl.exe",
+			"@P:\\Unreal Projects\\Streamline_Test\\.vscode\\compileCommands_Streamline_Test\\Streamline_Test.1.rsp"
+		],
+		"directory": "P:\\Epic Games\\UE_5.4\\Engine\\Source"
+	},
+	{
+		"file": "P:\\Unreal Projects\\Streamline_Test\\Source\\Streamline_Test\\Streamline_Test.h",
+		"arguments": [
+			"C:\\Program Files\\Microsoft Visual Studio\\2022\\Community\\VC\\Tools\\MSVC\\14.36.32532\\bin\\Hostx64\\x64\\cl.exe",
+			"@P:\\Unreal Projects\\Streamline_Test\\.vscode\\compileCommands_Streamline_Test\\Streamline_Test.1.rsp"
+		],
+		"directory": "P:\\Epic Games\\UE_5.4\\Engine\\Source"
+	},
+	{
+		"file": "P:\\Unreal Projects\\Streamline_Test\\Source\\Streamline_Test\\Streamline_TestCharacter.cpp",
+		"arguments": [
+			"C:\\Program Files\\Microsoft Visual Studio\\2022\\Community\\VC\\Tools\\MSVC\\14.36.32532\\bin\\Hostx64\\x64\\cl.exe",
+			"@P:\\Unreal Projects\\Streamline_Test\\.vscode\\compileCommands_Streamline_Test\\Streamline_Test.1.rsp"
+		],
+		"directory": "P:\\Epic Games\\UE_5.4\\Engine\\Source"
+	},
+	{
+		"file": "P:\\Unreal Projects\\Streamline_Test\\Source\\Streamline_Test\\Streamline_TestCharacter.h",
+		"arguments": [
+			"C:\\Program Files\\Microsoft Visual Studio\\2022\\Community\\VC\\Tools\\MSVC\\14.36.32532\\bin\\Hostx64\\x64\\cl.exe",
+			"@P:\\Unreal Projects\\Streamline_Test\\.vscode\\compileCommands_Streamline_Test\\Streamline_Test.1.rsp"
+		],
+		"directory": "P:\\Epic Games\\UE_5.4\\Engine\\Source"
+	},
+	{
+		"file": "P:\\Unreal Projects\\Streamline_Test\\Source\\Streamline_Test\\Streamline_TestGameMode.cpp",
+		"arguments": [
+			"C:\\Program Files\\Microsoft Visual Studio\\2022\\Community\\VC\\Tools\\MSVC\\14.36.32532\\bin\\Hostx64\\x64\\cl.exe",
+			"@P:\\Unreal Projects\\Streamline_Test\\.vscode\\compileCommands_Streamline_Test\\Streamline_Test.1.rsp"
+		],
+		"directory": "P:\\Epic Games\\UE_5.4\\Engine\\Source"
+	},
+	{
+		"file": "P:\\Unreal Projects\\Streamline_Test\\Source\\Streamline_Test\\Streamline_TestGameMode.h",
+		"arguments": [
+			"C:\\Program Files\\Microsoft Visual Studio\\2022\\Community\\VC\\Tools\\MSVC\\14.36.32532\\bin\\Hostx64\\x64\\cl.exe",
+			"@P:\\Unreal Projects\\Streamline_Test\\.vscode\\compileCommands_Streamline_Test\\Streamline_Test.1.rsp"
+		],
+		"directory": "P:\\Epic Games\\UE_5.4\\Engine\\Source"
+	},
+	{
+		"file": "P:\\Unreal Projects\\Streamline_Test\\Source\\Streamline_Test\\Streamline_TestPlayerController.cpp",
+		"arguments": [
+			"C:\\Program Files\\Microsoft Visual Studio\\2022\\Community\\VC\\Tools\\MSVC\\14.36.32532\\bin\\Hostx64\\x64\\cl.exe",
+			"@P:\\Unreal Projects\\Streamline_Test\\.vscode\\compileCommands_Streamline_Test\\Streamline_Test.1.rsp"
+		],
+		"directory": "P:\\Epic Games\\UE_5.4\\Engine\\Source"
+	},
+	{
+		"file": "P:\\Unreal Projects\\Streamline_Test\\Source\\Streamline_Test\\Streamline_TestPlayerController.h",
+		"arguments": [
+			"C:\\Program Files\\Microsoft Visual Studio\\2022\\Community\\VC\\Tools\\MSVC\\14.36.32532\\bin\\Hostx64\\x64\\cl.exe",
+			"@P:\\Unreal Projects\\Streamline_Test\\.vscode\\compileCommands_Streamline_Test\\Streamline_Test.1.rsp"
+		],
+		"directory": "P:\\Epic Games\\UE_5.4\\Engine\\Source"
+	},
+	{
+		"file": "P:\\Unreal Projects\\Streamline_Test\\Source\\Streamline_Test\\Streamline_TestProjectile.cpp",
+		"arguments": [
+			"C:\\Program Files\\Microsoft Visual Studio\\2022\\Community\\VC\\Tools\\MSVC\\14.36.32532\\bin\\Hostx64\\x64\\cl.exe",
+			"@P:\\Unreal Projects\\Streamline_Test\\.vscode\\compileCommands_Streamline_Test\\Streamline_Test.1.rsp"
+		],
+		"directory": "P:\\Epic Games\\UE_5.4\\Engine\\Source"
+	},
+	{
+		"file": "P:\\Unreal Projects\\Streamline_Test\\Source\\Streamline_Test\\Streamline_TestProjectile.h",
+		"arguments": [
+			"C:\\Program Files\\Microsoft Visual Studio\\2022\\Community\\VC\\Tools\\MSVC\\14.36.32532\\bin\\Hostx64\\x64\\cl.exe",
+			"@P:\\Unreal Projects\\Streamline_Test\\.vscode\\compileCommands_Streamline_Test\\Streamline_Test.1.rsp"
+		],
+		"directory": "P:\\Epic Games\\UE_5.4\\Engine\\Source"
+	},
+	{
+		"file": "P:\\Unreal Projects\\Streamline_Test\\Source\\Streamline_Test\\TP_PickUpComponent.cpp",
+		"arguments": [
+			"C:\\Program Files\\Microsoft Visual Studio\\2022\\Community\\VC\\Tools\\MSVC\\14.36.32532\\bin\\Hostx64\\x64\\cl.exe",
+			"@P:\\Unreal Projects\\Streamline_Test\\.vscode\\compileCommands_Streamline_Test\\Streamline_Test.1.rsp"
+		],
+		"directory": "P:\\Epic Games\\UE_5.4\\Engine\\Source"
+	},
+	{
+		"file": "P:\\Unreal Projects\\Streamline_Test\\Source\\Streamline_Test\\TP_PickUpComponent.h",
+		"arguments": [
+			"C:\\Program Files\\Microsoft Visual Studio\\2022\\Community\\VC\\Tools\\MSVC\\14.36.32532\\bin\\Hostx64\\x64\\cl.exe",
+			"@P:\\Unreal Projects\\Streamline_Test\\.vscode\\compileCommands_Streamline_Test\\Streamline_Test.1.rsp"
+		],
+		"directory": "P:\\Epic Games\\UE_5.4\\Engine\\Source"
+	},
+	{
+		"file": "P:\\Unreal Projects\\Streamline_Test\\Source\\Streamline_Test\\TP_WeaponComponent.cpp",
+		"arguments": [
+			"C:\\Program Files\\Microsoft Visual Studio\\2022\\Community\\VC\\Tools\\MSVC\\14.36.32532\\bin\\Hostx64\\x64\\cl.exe",
+			"@P:\\Unreal Projects\\Streamline_Test\\.vscode\\compileCommands_Streamline_Test\\Streamline_Test.1.rsp"
+		],
+		"directory": "P:\\Epic Games\\UE_5.4\\Engine\\Source"
+	},
+	{
+		"file": "P:\\Unreal Projects\\Streamline_Test\\Source\\Streamline_Test\\TP_WeaponComponent.h",
+		"arguments": [
+			"C:\\Program Files\\Microsoft Visual Studio\\2022\\Community\\VC\\Tools\\MSVC\\14.36.32532\\bin\\Hostx64\\x64\\cl.exe",
+			"@P:\\Unreal Projects\\Streamline_Test\\.vscode\\compileCommands_Streamline_Test\\Streamline_Test.1.rsp"
+		],
+		"directory": "P:\\Epic Games\\UE_5.4\\Engine\\Source"
+	}
+]
