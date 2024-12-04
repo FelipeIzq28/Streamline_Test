@@ -176,6 +176,13 @@ void AStreamline_TestCharacter::ReleaseObject(const FInputActionValue& Value)
 			// Remover etiqueta "Grabbed"
 			GrabbedActor->Tags.Remove("Grabbed");
 			UE_LOG(LogTemp, Display, TEXT("Released Actor: %s"), *GrabbedActor->GetActorNameOrLabel());
+			// Calcula la dirección de lanzamiento
+			FVector PlayerViewPointLocation;
+			FRotator PlayerViewPointRotation;
+			GetWorld()->GetFirstPlayerController()->GetPlayerViewPoint(PlayerViewPointLocation, PlayerViewPointRotation);
+			FVector LaunchDirection = PlayerViewPointRotation.Vector();
+
+			GrabbedComponent->AddImpulse(LaunchDirection * LaunchForce, NAME_None, true);
 		}
 
 		// Liberar el componente del PhysicsHandle

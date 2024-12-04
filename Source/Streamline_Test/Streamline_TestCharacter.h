@@ -75,14 +75,17 @@ public:
 	/** Returns FirstPersonCameraComponent subobject **/
 	UCameraComponent* GetFirstPersonCameraComponent() const { return FirstPersonCameraComponent; }
 private:
-	UPROPERTY(EditAnywhere);
+	UPROPERTY(EditAnywhere, Category = "Gravity Gun");
 	float MaxGrabDistance = 400;
 
-	UPROPERTY(EditAnywhere)
+	UPROPERTY(EditAnywhere, Category = "Gravity Gun")
 	float GrabRadius = 100;
 
-	UPROPERTY(EditAnywhere)
+	UPROPERTY(EditAnywhere, Category = "Gravity Gun")
 	float HoldDistance = 200;
+
+	UPROPERTY(EditAnywhere, Category = "Gravity Gun")
+	float LaunchForce = 1500.0f;
 
 	UPROPERTY(VisibleAnywhere)
 	UPhysicsHandleComponent* PhysicsHandleComponent;
