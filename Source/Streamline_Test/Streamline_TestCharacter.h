@@ -42,6 +42,9 @@ class AStreamline_TestCharacter : public ACharacter
 	
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Input, meta = (AllowPrivateAccess = "true"))
 	UInputAction* GrabAction;
+
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Input, meta = (AllowPrivateAccess = "true"))
+	UInputAction* DashAction;
 public:
 	AStreamline_TestCharacter();
 
@@ -64,6 +67,10 @@ protected:
 	void Grab(const FInputActionValue& Value);
 
 	void ReleaseObject(const FInputActionValue& Value);
+
+	void PerformDash(const FInputActionValue& Value);
+
+	void ResetDash();
 protected:
 	// APawn interface
 	virtual void SetupPlayerInputComponent(UInputComponent* InputComponent) override;
@@ -75,6 +82,7 @@ public:
 	/** Returns FirstPersonCameraComponent subobject **/
 	UCameraComponent* GetFirstPersonCameraComponent() const { return FirstPersonCameraComponent; }
 private:
+	//Gravity Gun Variables
 	UPROPERTY(EditAnywhere, Category = "Gravity Gun");
 	float MaxGrabDistance = 400;
 
@@ -92,7 +100,19 @@ private:
 	UPhysicsHandleComponent* GetPhysicsHandle() const;
 
 	bool GetGrabbableInReach(FHitResult& OutHitResult) const;
+	//Dash Variables
+	UPROPERTY(EditAnywhere, Category = "Dash")
+	float DashDistance = 600.0f;
 
+	UPROPERTY(EditAnywhere, Category = "Dash")
+	float DashDuration = 0.2f;
 
+	UPROPERTY(EditAnywhere, Category = "Dash")
+	bool bCanDash = true;
+
+	UPROPERTY(EditAnywhere, Category = "Dash")
+	float DashCooldown = 1.0f;
+
+	FTimerHandle DashCooldownTimer;
 };
 

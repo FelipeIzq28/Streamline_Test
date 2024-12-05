@@ -99,8 +99,12 @@ void AStreamline_TestCharacter::SetupPlayerInputComponent(UInputComponent* Playe
 		// Looking
 		EnhancedInputComponent->BindAction(LookAction, ETriggerEvent::Triggered, this, &AStreamline_TestCharacter::Look);
 
+		//Grab and launch objects
 		EnhancedInputComponent->BindAction(GrabAction, ETriggerEvent::Started, this, &AStreamline_TestCharacter::Grab);
 		EnhancedInputComponent->BindAction(GrabAction, ETriggerEvent::Completed, this, &AStreamline_TestCharacter::ReleaseObject);
+
+		//Dash
+		EnhancedInputComponent->BindAction(DashAction, ETriggerEvent::Triggered, this, &AStreamline_TestCharacter::PerformDash);
 	}
 	else
 	{
@@ -227,4 +231,32 @@ bool AStreamline_TestCharacter::GetGrabbableInReach(FHitResult& OutHitResult) co
 		Sphere
 	);
 	return HasHit;
+}
+void AStreamline_TestCharacter::PerformDash(const FInputActionValue& Value)
+{
+	if (!bCanDash)
+	{
+		UE_LOG(LogTemp, Warning, TEXT("Dash is on cooldown."));
+		return;
+	}
+
+	// Obtén la dirección hacia adelante del personaje
+	FVector DashDirection = GetActorForwardVector();
+
+	// Calcula la ubicación de destino del Dash
+	FVector DashTargetLocation = GetActorLocation() + DashDirection * DashDistance;
+
+	// Mueve al personaje
+	LaunchCharacter(DashDirection * DashDistance / DashDuration, true, true);
+
+	UE_LOG(LogTemp, Display, TEXT("Dashing to: %s"), *DashTargetLocation.ToString());
+
+	// Inicia el cooldown
+	bCanDash = false;
+	GetWorld()->GetTimerManager().SetTimer(DashCooldownTimer, this, &AStreamline_TestCharacter::ResetDash, DashCooldown, false);
+}
+void AStreamline_TestCharacter::ResetDash()
+{
+	bCanDash = true;
+	UE_LOG(LogTemp, Display, TEXT("Dash is ready."));
 }
