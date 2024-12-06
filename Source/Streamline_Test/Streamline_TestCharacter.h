@@ -5,6 +5,7 @@
 #include "CoreMinimal.h"
 #include "GameFramework/Character.h"
 #include "PhysicsEngine/PhysicsHandleComponent.h"
+#include "Base_Grenade.h"
 #include "Logging/LogMacros.h"
 #include "Streamline_TestCharacter.generated.h"
 
@@ -23,7 +24,7 @@ class AStreamline_TestCharacter : public ACharacter
 	GENERATED_BODY()
 
 	/** Pawn mesh: 1st person view (arms; seen only by self) */
-	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category=Mesh, meta = (AllowPrivateAccess = "true"))
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Mesh, meta = (AllowPrivateAccess = "true"))
 	USkeletalMeshComponent* Mesh1P;
 
 	/** First person camera */
@@ -33,18 +34,24 @@ class AStreamline_TestCharacter : public ACharacter
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Input", meta = (AllowPrivateAccess = "true"))
 	UInputMappingContext* AbilitiesMappingContext;
 	/** Jump Input Action */
-	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category=Input, meta=(AllowPrivateAccess = "true"))
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Input, meta = (AllowPrivateAccess = "true"))
 	UInputAction* JumpAction;
 
 	/** Move Input Action */
-	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category=Input, meta=(AllowPrivateAccess = "true"))
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Input, meta = (AllowPrivateAccess = "true"))
 	UInputAction* MoveAction;
-	
+
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Input, meta = (AllowPrivateAccess = "true"))
 	UInputAction* GrabAction;
 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Input, meta = (AllowPrivateAccess = "true"))
 	UInputAction* DashAction;
+
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Input, meta = (AllowPrivateAccess = "true"))
+	UInputAction* SmokeGrenadeAction;
+
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Input, meta = (AllowPrivateAccess = "true"))
+	UInputAction* MolotovGrenadeAction;
 public:
 	AStreamline_TestCharacter();
 
@@ -70,6 +77,12 @@ protected:
 
 	void PerformDash(const FInputActionValue& Value);
 
+	void ThrowGrenade(TSubclassOf<ABase_Grenade> GrenadeClass);
+
+	void ThrowSmokeGrenade();
+
+	void ThrowMolotovGrenade();
+
 	void ResetDash();
 protected:
 	// APawn interface
@@ -93,7 +106,7 @@ private:
 	float HoldDistance = 200;
 
 	UPROPERTY(EditAnywhere, Category = "Gravity Gun")
-	float LaunchForce = 1500.0f;
+	float GravityLaunchForce = 1500.0f;
 
 	UPROPERTY(VisibleAnywhere)
 	UPhysicsHandleComponent* PhysicsHandleComponent;
@@ -114,5 +127,30 @@ private:
 	float DashCooldown = 1.0f;
 
 	FTimerHandle DashCooldownTimer;
+
+	//Grenades
+	UPROPERTY(EditAnywhere, Category = "Grenades")
+	TSubclassOf<class ABase_Grenade> SmokeGrenade;
+
+	UPROPERTY(EditAnywhere, Category = "Grenades")
+	TSubclassOf<class ABase_Grenade> MolotovGrenade;
+
+	UPROPERTY(EditAnywhere, Category = "Grenades")
+	float GrenadeLaunchForce = 1000.0f;
+
+	UPROPERTY(EditAnywhere, Category = "Grenades")
+	float SmokeGrenadeCooldown = 1.0f;
+
+	UPROPERTY(EditAnywhere, Category = "Grenades")
+	float MolotovGrenadeCooldown = 1.5f;
+
+	bool bCanThrowSmokeGrenade = true;
+	bool bCanThrowMolotovGrenade = true;
+
+	FTimerHandle SmokeGrenadeCooldownTimer;
+	FTimerHandle MolotovGrenadeCooldownTimer;
+
+	void ResetGrenadeCooldown(bool* bCanThrow);
+
 };
 

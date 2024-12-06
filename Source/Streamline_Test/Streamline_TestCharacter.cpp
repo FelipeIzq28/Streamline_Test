@@ -105,6 +105,10 @@ void AStreamline_TestCharacter::SetupPlayerInputComponent(UInputComponent* Playe
 
 		//Dash
 		EnhancedInputComponent->BindAction(DashAction, ETriggerEvent::Triggered, this, &AStreamline_TestCharacter::PerformDash);
+
+		//Grenades
+		EnhancedInputComponent->BindAction(SmokeGrenadeAction, ETriggerEvent::Triggered, this, &AStreamline_TestCharacter::ThrowSmokeGrenade);
+		EnhancedInputComponent->BindAction(MolotovGrenadeAction, ETriggerEvent::Triggered, this, &AStreamline_TestCharacter::ThrowMolotovGrenade);
 	}
 	else
 	{
@@ -186,7 +190,7 @@ void AStreamline_TestCharacter::ReleaseObject(const FInputActionValue& Value)
 			GetWorld()->GetFirstPlayerController()->GetPlayerViewPoint(PlayerViewPointLocation, PlayerViewPointRotation);
 			FVector LaunchDirection = PlayerViewPointRotation.Vector();
 
-			GrabbedComponent->AddImpulse(LaunchDirection * LaunchForce, NAME_None, true);
+			GrabbedComponent->AddImpulse(LaunchDirection * GravityLaunchForce, NAME_None, true);
 		}
 
 		// Liberar el componente del PhysicsHandle
@@ -259,4 +263,69 @@ void AStreamline_TestCharacter::ResetDash()
 {
 	bCanDash = true;
 	UE_LOG(LogTemp, Display, TEXT("Dash is ready."));
+}
+void AStreamline_TestCharacter::ThrowGrenade(TSubclassOf<ABase_Grenade> GrenadeClass)
+{
+	if (GrenadeClass)
+	{
+		FVector PlayerViewPointLocation;
+		FRotator PlayerViewPointRotation;
+
+		// Obtén la ubicación y rotación de la cámara
+		GetWorld()->GetFirstPlayerController()->GetPlayerViewPoint(PlayerViewPointLocation, PlayerViewPointRotation);
+
+		FVector SpawnLocation = PlayerViewPointLocation + PlayerViewPointRotation.Vector() * 100.0f; // Ajusta esta distancia
+		FVector LaunchDirection = PlayerViewPointRotation.Vector();
+
+		FActorSpawnParameters SpawnParams;
+		SpawnParams.Owner = this;
+		SpawnParams.Instigator = GetInstigator();
+
+		// Crea y configura la granada
+		ABase_Grenade* SpawnedGrenade = GetWorld()->SpawnActor<ABase_Grenade>(GrenadeClass, SpawnLocation, PlayerViewPointRotation, SpawnParams);
+		if (SpawnedGrenade)
+		{
+			SpawnedGrenade->InitializeGrenade(LaunchDirection, GrenadeLaunchForce);
+		}
+	}
+}
+void AStreamline_TestCharacter::ThrowSmokeGrenade()
+{
+	if (!bCanThrowSmokeGrenade)
+	{
+		UE_LOG(LogTemp, Warning, TEXT("Smoke grenade is on cooldown."));
+		return;
+	}
+	ThrowGrenade(SmokeGrenade);
+
+	bCanThrowSmokeGrenade = false;
+
+	GetWorld()->GetTimerManager().SetTimer(SmokeGrenadeCooldownTimer, [this]()
+		{
+			ResetGrenadeCooldown(&bCanThrowSmokeGrenade);
+		}, SmokeGrenadeCooldown, false);
+}
+void AStreamline_TestCharacter::ThrowMolotovGrenade()
+{
+	if (!bCanThrowMolotovGrenade)
+	{
+		UE_LOG(LogTemp, Warning, TEXT("Flash grenade is on cooldown."));
+		return;
+	}
+	ThrowGrenade(MolotovGrenade);
+
+	bCanThrowMolotovGrenade = false;
+
+	GetWorld()->GetTimerManager().SetTimer(MolotovGrenadeCooldownTimer, [this]()
+		{
+			ResetGrenadeCooldown(&bCanThrowMolotovGrenade);
+		}, SmokeGrenadeCooldown, false);
+}
+void AStreamline_TestCharacter::ResetGrenadeCooldown(bool* bCanThrow)
+{
+	if (bCanThrow)
+	{
+		*bCanThrow = true;
+		UE_LOG(LogTemp, Display, TEXT("Grenade cooldown reset."));
+	}
 }
