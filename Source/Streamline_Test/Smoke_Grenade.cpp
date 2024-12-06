@@ -8,13 +8,28 @@ ASmoke_Grenade::ASmoke_Grenade()
     SmokeEffect = CreateDefaultSubobject<UNiagaraComponent>(TEXT("SmokeEffect"));
     SmokeEffect->SetupAttachment(RootComponent);
 
+    SmokeEffect->SetWorldLocation(FVector(0.0f, 0.0f, -50.0f));
     SmokeEffect->SetUsingAbsoluteRotation(true);
     SmokeEffect->SetAutoActivate(false);
 }
 
+
 void ASmoke_Grenade::BeginPlay()
 {
     Super::BeginPlay();
+    StartUpDirection = GetActorUpVector();
+}
+void ASmoke_Grenade::Tick(float DeltaTime)
+{
+    Super::Tick(DeltaTime);
+
+    if (SmokeEffect && SmokeEffect->IsActive())
+    {
+        FVector DownwardOffset = -StartUpDirection * 50.0f; // Ajuste de la distancia hacia abajo
+        SmokeEffect->SetWorldLocation(GetActorLocation() + DownwardOffset);
+        // Mantén la rotación fija hacia arriba
+        SmokeEffect->SetWorldRotation(FRotator(0.0f, 0.0f, 0.0f));
+    }
 }
 
 void ASmoke_Grenade::Explode()

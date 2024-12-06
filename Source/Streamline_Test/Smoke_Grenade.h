@@ -18,6 +18,7 @@ class STREAMLINE_TEST_API ASmoke_Grenade : public ABase_Grenade
 public:
     ASmoke_Grenade();
 
+    virtual void Tick(float DeltaTime) override;
 protected:
     virtual void BeginPlay() override;
 
@@ -40,6 +41,7 @@ private:
     // Función para activar el humo
     void ActivateSmoke();
 
+    FVector StartUpDirection;
     // TimerHandle para controlar el inicio del humo
     FTimerHandle SmokeDelayTimer;
 
