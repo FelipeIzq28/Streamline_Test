@@ -24,7 +24,7 @@ protected:
     UStaticMeshComponent* GrenadeMesh;
 
     // Tiempo antes de que la granada explote
-    UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Grenade")
+    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Grenade")
     float ExplosionDelay;
 
     // Función llamada cuando la granada explota

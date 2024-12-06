@@ -18,7 +18,7 @@ ABase_Grenade::ABase_Grenade()
 void ABase_Grenade::BeginPlay()
 {
 	Super::BeginPlay();
-	
+	GetWorld()->GetTimerManager().SetTimer(ExplosionTimer, this, &ABase_Grenade::Explode, ExplosionDelay, false);
 }
 
 // Called every frame
@@ -41,5 +41,6 @@ void ABase_Grenade::InitializeGrenade(FVector LaunchDirection, float LaunchForce
 }
 void ABase_Grenade::Explode()
 {
+	UE_LOG(LogTemp, Display, TEXT("Base Grenade Exploded!"));
 }
 
