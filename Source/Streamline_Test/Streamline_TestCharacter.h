@@ -52,6 +52,9 @@ class AStreamline_TestCharacter : public ACharacter
 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Input, meta = (AllowPrivateAccess = "true"))
 	UInputAction* MolotovGrenadeAction;
+
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Input, meta = (AllowPrivateAccess = "true"))
+	UInputAction* CreateLightAction ;
 public:
 	AStreamline_TestCharacter();
 
@@ -77,13 +80,16 @@ protected:
 
 	void PerformDash(const FInputActionValue& Value);
 
+	void ResetDash();
+
 	void ThrowGrenade(TSubclassOf<ABase_Grenade> GrenadeClass);
 
 	void ThrowSmokeGrenade();
 
 	void ThrowMolotovGrenade();
 
-	void ResetDash();
+	void CreateLight();
+	void DestroyLight();
 protected:
 	// APawn interface
 	virtual void SetupPlayerInputComponent(UInputComponent* InputComponent) override;
@@ -151,6 +157,19 @@ private:
 	FTimerHandle MolotovGrenadeCooldownTimer;
 
 	void ResetGrenadeCooldown(bool* bCanThrow);
+
+	//Light Creation
+	UPROPERTY(EditAnywhere, Category = "Light Creation")
+	float LightDistance;
+
+	UPROPERTY(EditAnywhere, Category = "Light Creation")
+	float LightIntensity;
+
+	UPROPERTY(EditAnywhere, Category = "Light Creation")
+	FLinearColor LightColor;
+
+	UPROPERTY()
+	class UPointLightComponent* DynamicLight;
 
 };
 

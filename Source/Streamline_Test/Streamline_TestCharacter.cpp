@@ -7,6 +7,7 @@
 #include "Components/CapsuleComponent.h"
 #include "Components/SkeletalMeshComponent.h"
 #include "Components/SceneComponent.h"
+#include "Components/PointLightComponent.h"
 #include "EnhancedInputComponent.h"
 #include "EnhancedInputSubsystems.h"
 #include "InputActionValue.h"
@@ -109,6 +110,9 @@ void AStreamline_TestCharacter::SetupPlayerInputComponent(UInputComponent* Playe
 		//Grenades
 		EnhancedInputComponent->BindAction(SmokeGrenadeAction, ETriggerEvent::Triggered, this, &AStreamline_TestCharacter::ThrowSmokeGrenade);
 		EnhancedInputComponent->BindAction(MolotovGrenadeAction, ETriggerEvent::Triggered, this, &AStreamline_TestCharacter::ThrowMolotovGrenade);
+
+		EnhancedInputComponent->BindAction(CreateLightAction, ETriggerEvent::Started, this, &AStreamline_TestCharacter::CreateLight);
+		EnhancedInputComponent->BindAction(CreateLightAction, ETriggerEvent::Completed, this, &AStreamline_TestCharacter::DestroyLight);
 	}
 	else
 	{
@@ -327,5 +331,41 @@ void AStreamline_TestCharacter::ResetGrenadeCooldown(bool* bCanThrow)
 	{
 		*bCanThrow = true;
 		UE_LOG(LogTemp, Display, TEXT("Grenade cooldown reset."));
+	}
+}
+void AStreamline_TestCharacter::CreateLight()
+{
+	if (!DynamicLight)
+	{
+		// Crear dinámicamente el componente de luz
+		DynamicLight = NewObject<UPointLightComponent>(this);
+		if (DynamicLight)
+		{
+			DynamicLight->RegisterComponent();
+			DynamicLight->AttachToComponent(RootComponent, FAttachmentTransformRules::KeepWorldTransform);
+
+			// Configurar la luz
+			DynamicLight->SetIntensity(LightIntensity); // Intensidad de la luz
+			DynamicLight->SetLightColor(LightColor); // Color de la luz
+			APlayerController* PlayerController = Cast<APlayerController>(GetController());
+			if (PlayerController)
+			{
+				FRotator CameraRotation = PlayerController->GetControlRotation(); // Rotación de la cámara
+				FVector ForwardVector = CameraRotation.Vector(); // Dirección hacia adelante
+				FVector LightWorldPosition = GetActorLocation() + (ForwardVector * LightDistance);
+
+				// Posicionar la luz en el frente
+				DynamicLight->SetWorldLocation(LightWorldPosition);
+			}
+		}
+	}
+}
+void AStreamline_TestCharacter::DestroyLight()
+{
+	if (DynamicLight)
+	{
+		// Destruir el componente de luz
+		DynamicLight->DestroyComponent();
+		DynamicLight = nullptr;
 	}
 }
