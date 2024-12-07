@@ -2,7 +2,7 @@
 
 
 #include "Base_Grenade.h"
-
+#include "Components/StaticMeshComponent.h"
 // Sets default values
 ABase_Grenade::ABase_Grenade()
 {
@@ -12,6 +12,7 @@ ABase_Grenade::ABase_Grenade()
 	RootComponent = GrenadeMesh;
 
 	GrenadeMesh->SetSimulatePhysics(true);
+	GrenadeMesh->SetNotifyRigidBodyCollision(true);
 }
 
 // Called when the game starts or when spawned
@@ -20,6 +21,7 @@ void ABase_Grenade::BeginPlay()
 	Super::BeginPlay();
 	GetWorld()->GetTimerManager().SetTimer(ExplosionTimer, this, &ABase_Grenade::Explode, ExplosionDelay, false);
 }
+
 
 // Called every frame
 void ABase_Grenade::Tick(float DeltaTime)
@@ -42,5 +44,9 @@ void ABase_Grenade::InitializeGrenade(FVector LaunchDirection, float LaunchForce
 void ABase_Grenade::Explode()
 {
 	UE_LOG(LogTemp, Display, TEXT("Base Grenade Exploded!"));
+}
+void ABase_Grenade::OnHit(UPrimitiveComponent* HitComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, FVector NormalImpulse, const FHitResult& Hit)
+{
+	UE_LOG(LogTemp, Display, TEXT("Base Grenade Hit!"));
 }
 

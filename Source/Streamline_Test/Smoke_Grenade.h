@@ -42,8 +42,6 @@ private:
     void ActivateSmoke();
 
     FVector StartUpDirection;
-    // TimerHandle para controlar el inicio del humo
-    FTimerHandle SmokeDelayTimer;
 
     // TimerHandle para detener el humo
     FTimerHandle SmokeDurationTimer;

@@ -45,6 +45,7 @@ void ASmoke_Grenade::ActivateSmoke()
     if (SmokeEffect)
     {
         SmokeEffect->SetWorldRotation(FRotator(0.0f, 0.0f, 0.0f));
+        SmokeEffect->SetWorldScale3D(FVector(0.4f, 0.5f, 0.3f));
         // Activa el efecto de humo
         SmokeEffect->Activate();
 
