@@ -80,8 +80,6 @@ protected:
 
 	void PerformDash(const FInputActionValue& Value);
 
-	void ResetDash();
-
 	void ThrowGrenade(TSubclassOf<ABase_Grenade> GrenadeClass);
 
 	void ThrowSmokeGrenade();
@@ -102,7 +100,14 @@ public:
 	UCameraComponent* GetFirstPersonCameraComponent() const { return FirstPersonCameraComponent; }
 
 	UFUNCTION(BlueprintPure, Category = "Cooldown")
+	float GetDashCooldown() const;
+
+	UFUNCTION(BlueprintPure, Category = "Cooldown")
 	float GetSmokeCooldown() const;
+
+	UFUNCTION(BlueprintPure, Category = "Cooldown")
+	float GetMolotovCooldown() const;
+
 private:
 	//Gravity Gun Variables
 	UPROPERTY(EditAnywhere, Category = "Gravity Gun");
@@ -135,6 +140,10 @@ private:
 	UPROPERTY(EditAnywhere, Category = "Dash")
 	float DashCooldown = 1.0f;
 
+
+	UPROPERTY(VisibleAnywhere, Category = "Dash")
+	float CurrentDashCooldown;
+
 	FTimerHandle DashCooldownTimer;
 
 	//Grenades
@@ -165,7 +174,7 @@ private:
 	FTimerHandle SmokeGrenadeCooldownTimer;
 	FTimerHandle MolotovGrenadeCooldownTimer;
 
-	void ResetGrenadeCooldown(bool* bCanThrow, float& CurrentCooldown, float& Cooldown);
+	void ResetCooldown(bool* bCanThrow, float& CurrentCooldown, float& Cooldown);
 
 	void SetCooldowns(float DeltaTime);
 

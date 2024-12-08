@@ -62,6 +62,7 @@ void AStreamline_TestCharacter::BeginPlay()
 
 	CurrentSmokeCooldown = SmokeGrenadeCooldown;
 	CurrentMolotovCooldown = MolotovGrenadeCooldown;
+	CurrentDashCooldown = DashCooldown;
 }
 
 void AStreamline_TestCharacter::Tick(float DeltaTime)
@@ -124,12 +125,6 @@ void AStreamline_TestCharacter::SetupPlayerInputComponent(UInputComponent* Playe
 		UE_LOG(LogTemplateCharacter, Error, TEXT("'%s' Failed to find an Enhanced Input Component! This template is built to use the Enhanced Input system. If you intend to use the legacy system, then you will need to update this C++ file."), *GetNameSafe(this));
 	}
 }
-
-float AStreamline_TestCharacter::GetSmokeCooldown() const
-{
-	return CurrentSmokeCooldown;
-}
-
 
 void AStreamline_TestCharacter::Move(const FInputActionValue& Value)
 {
@@ -271,12 +266,10 @@ void AStreamline_TestCharacter::PerformDash(const FInputActionValue& Value)
 
 	// Inicia el cooldown
 	bCanDash = false;
-	GetWorld()->GetTimerManager().SetTimer(DashCooldownTimer, this, &AStreamline_TestCharacter::ResetDash, DashCooldown, false);
-}
-void AStreamline_TestCharacter::ResetDash()
-{
-	bCanDash = true;
-	UE_LOG(LogTemp, Display, TEXT("Dash is ready."));
+	GetWorld()->GetTimerManager().SetTimer(DashCooldownTimer, [this]()
+		{
+			ResetCooldown(&bCanDash, CurrentDashCooldown, DashCooldown);
+		}, DashCooldown, false);
 }
 void AStreamline_TestCharacter::ThrowGrenade(TSubclassOf<ABase_Grenade> GrenadeClass)
 {
@@ -316,7 +309,7 @@ void AStreamline_TestCharacter::ThrowSmokeGrenade()
 
 	GetWorld()->GetTimerManager().SetTimer(SmokeGrenadeCooldownTimer, [this]()
 		{
-			ResetGrenadeCooldown(&bCanThrowSmokeGrenade, CurrentSmokeCooldown, SmokeGrenadeCooldown);
+			ResetCooldown(&bCanThrowSmokeGrenade, CurrentSmokeCooldown, SmokeGrenadeCooldown);
 		}, SmokeGrenadeCooldown, false);
 }
 void AStreamline_TestCharacter::ThrowMolotovGrenade()
@@ -332,27 +325,16 @@ void AStreamline_TestCharacter::ThrowMolotovGrenade()
 
 	GetWorld()->GetTimerManager().SetTimer(MolotovGrenadeCooldownTimer, [this]()
 		{
-			ResetGrenadeCooldown(&bCanThrowMolotovGrenade, CurrentMolotovCooldown, MolotovGrenadeCooldown);
+			ResetCooldown(&bCanThrowMolotovGrenade, CurrentMolotovCooldown, MolotovGrenadeCooldown);
 		}, SmokeGrenadeCooldown, false);
 }
-void AStreamline_TestCharacter::ResetGrenadeCooldown(bool* bCanThrow, float& CurrentCooldown, float& Cooldown)
+void AStreamline_TestCharacter::ResetCooldown(bool* bCanThrow, float& CurrentCooldown, float& Cooldown)
 {
 	if (bCanThrow)
 	{
 		*bCanThrow = true;
 		CurrentCooldown = Cooldown;
 		UE_LOG(LogTemp, Display, TEXT("Grenade cooldown reset."));
-	}
-}
-void AStreamline_TestCharacter::SetCooldowns(float DeltaTime)
-{
-	if (!bCanThrowSmokeGrenade) 
-	{
-		CurrentSmokeCooldown -= DeltaTime;
-	}
-	if (!bCanThrowMolotovGrenade)
-	{
-		CurrentMolotovCooldown -= DeltaTime;
 	}
 }
 void AStreamline_TestCharacter::CreateLight()
@@ -390,4 +372,33 @@ void AStreamline_TestCharacter::DestroyLight()
 		DynamicLight->DestroyComponent();
 		DynamicLight = nullptr;
 	}
+}
+void AStreamline_TestCharacter::SetCooldowns(float DeltaTime)
+{
+	if (!bCanThrowSmokeGrenade)
+	{
+		CurrentSmokeCooldown -= DeltaTime;
+	}
+	if (!bCanThrowMolotovGrenade)
+	{
+		CurrentMolotovCooldown -= DeltaTime;
+	}
+	if (!bCanDash)
+	{
+		CurrentDashCooldown -= DeltaTime;
+	}
+}
+float AStreamline_TestCharacter::GetDashCooldown() const
+{
+	return CurrentDashCooldown;
+}
+
+float AStreamline_TestCharacter::GetSmokeCooldown() const
+{
+	return CurrentSmokeCooldown;
+}
+
+float AStreamline_TestCharacter::GetMolotovCooldown() const
+{
+	return CurrentMolotovCooldown;
 }
