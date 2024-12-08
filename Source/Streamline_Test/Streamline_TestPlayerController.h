@@ -27,5 +27,13 @@ protected:
 
 	virtual void BeginPlay() override;
 
-	// End Actor interface
+protected:
+	// Clase del Widget
+	UPROPERTY(EditAnywhere, Category = "UI")
+	TSubclassOf<class UUserWidget> HUDWidgetClass;
+
+	// Referencia al Widget instanciado
+	UPROPERTY()
+	class UUserWidget* HUDWidget;
+
 };

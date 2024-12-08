@@ -3,6 +3,7 @@
 
 #include "Streamline_TestPlayerController.h"
 #include "EnhancedInputSubsystems.h"
+#include "Blueprint/UserWidget.h"
 #include "Engine/LocalPlayer.h"
 
 void AStreamline_TestPlayerController::BeginPlay()
@@ -15,4 +16,13 @@ void AStreamline_TestPlayerController::BeginPlay()
 		// add the mapping context so we get controls
 		Subsystem->AddMappingContext(InputMappingContext, 0);
 	}
+
+    if (HUDWidgetClass)
+    {
+        HUDWidget = CreateWidget<UUserWidget>(this, HUDWidgetClass);
+        if (HUDWidget)
+        {
+            HUDWidget->AddToViewport(10);
+        }
+    }
 }

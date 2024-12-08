@@ -100,6 +100,9 @@ public:
 	USkeletalMeshComponent* GetMesh1P() const { return Mesh1P; }
 	/** Returns FirstPersonCameraComponent subobject **/
 	UCameraComponent* GetFirstPersonCameraComponent() const { return FirstPersonCameraComponent; }
+
+	UFUNCTION(BlueprintPure, Category = "Cooldown")
+	float GetSmokeCooldown() const;
 private:
 	//Gravity Gun Variables
 	UPROPERTY(EditAnywhere, Category = "Gravity Gun");
@@ -147,8 +150,14 @@ private:
 	UPROPERTY(EditAnywhere, Category = "Grenades")
 	float SmokeGrenadeCooldown = 1.0f;
 
+	UPROPERTY(VisibleAnywhere, Category = "Grenades")
+	float CurrentSmokeCooldown;
+
 	UPROPERTY(EditAnywhere, Category = "Grenades")
 	float MolotovGrenadeCooldown = 1.5f;
+
+	UPROPERTY(VisibleAnywhere, Category = "Grenades")
+	float CurrentMolotovCooldown;
 
 	bool bCanThrowSmokeGrenade = true;
 	bool bCanThrowMolotovGrenade = true;
@@ -156,7 +165,10 @@ private:
 	FTimerHandle SmokeGrenadeCooldownTimer;
 	FTimerHandle MolotovGrenadeCooldownTimer;
 
-	void ResetGrenadeCooldown(bool* bCanThrow);
+	void ResetGrenadeCooldown(bool* bCanThrow, float& CurrentCooldown, float& Cooldown);
+
+	void SetCooldowns(float DeltaTime);
+
 
 	//Light Creation
 	UPROPERTY(EditAnywhere, Category = "Light Creation")

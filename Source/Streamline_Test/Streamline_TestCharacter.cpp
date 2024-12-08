@@ -44,6 +44,7 @@ AStreamline_TestCharacter::AStreamline_TestCharacter()
 
 	PhysicsHandleComponent = CreateDefaultSubobject<UPhysicsHandleComponent>(TEXT("PhysicsHandle"));
 
+
 }
 
 void AStreamline_TestCharacter::BeginPlay()
@@ -58,6 +59,9 @@ void AStreamline_TestCharacter::BeginPlay()
 			Subsystem->AddMappingContext(AbilitiesMappingContext, 0);
 		}
 	}
+
+	CurrentSmokeCooldown = SmokeGrenadeCooldown;
+	CurrentMolotovCooldown = MolotovGrenadeCooldown;
 }
 
 void AStreamline_TestCharacter::Tick(float DeltaTime)
@@ -79,6 +83,7 @@ void AStreamline_TestCharacter::Tick(float DeltaTime)
 		// Actualiza la posición y rotación del Physics Handle
 		PhysicsHandle->SetTargetLocationAndRotation(TargetLocation, PlayerViewPointRotation);
 	}
+	SetCooldowns(DeltaTime);
 }
 
 
@@ -118,6 +123,11 @@ void AStreamline_TestCharacter::SetupPlayerInputComponent(UInputComponent* Playe
 	{
 		UE_LOG(LogTemplateCharacter, Error, TEXT("'%s' Failed to find an Enhanced Input Component! This template is built to use the Enhanced Input system. If you intend to use the legacy system, then you will need to update this C++ file."), *GetNameSafe(this));
 	}
+}
+
+float AStreamline_TestCharacter::GetSmokeCooldown() const
+{
+	return CurrentSmokeCooldown;
 }
 
 
@@ -306,7 +316,7 @@ void AStreamline_TestCharacter::ThrowSmokeGrenade()
 
 	GetWorld()->GetTimerManager().SetTimer(SmokeGrenadeCooldownTimer, [this]()
 		{
-			ResetGrenadeCooldown(&bCanThrowSmokeGrenade);
+			ResetGrenadeCooldown(&bCanThrowSmokeGrenade, CurrentSmokeCooldown, SmokeGrenadeCooldown);
 		}, SmokeGrenadeCooldown, false);
 }
 void AStreamline_TestCharacter::ThrowMolotovGrenade()
@@ -322,15 +332,27 @@ void AStreamline_TestCharacter::ThrowMolotovGrenade()
 
 	GetWorld()->GetTimerManager().SetTimer(MolotovGrenadeCooldownTimer, [this]()
 		{
-			ResetGrenadeCooldown(&bCanThrowMolotovGrenade);
+			ResetGrenadeCooldown(&bCanThrowMolotovGrenade, CurrentMolotovCooldown, MolotovGrenadeCooldown);
 		}, SmokeGrenadeCooldown, false);
 }
-void AStreamline_TestCharacter::ResetGrenadeCooldown(bool* bCanThrow)
+void AStreamline_TestCharacter::ResetGrenadeCooldown(bool* bCanThrow, float& CurrentCooldown, float& Cooldown)
 {
 	if (bCanThrow)
 	{
 		*bCanThrow = true;
+		CurrentCooldown = Cooldown;
 		UE_LOG(LogTemp, Display, TEXT("Grenade cooldown reset."));
+	}
+}
+void AStreamline_TestCharacter::SetCooldowns(float DeltaTime)
+{
+	if (!bCanThrowSmokeGrenade) 
+	{
+		CurrentSmokeCooldown -= DeltaTime;
+	}
+	if (!bCanThrowMolotovGrenade)
+	{
+		CurrentMolotovCooldown -= DeltaTime;
 	}
 }
 void AStreamline_TestCharacter::CreateLight()
