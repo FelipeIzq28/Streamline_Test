@@ -6,6 +6,7 @@
 #include "GameFramework/Character.h"
 #include "PhysicsEngine/PhysicsHandleComponent.h"
 #include "Base_Grenade.h"
+#include "Quest_Manager.h"
 #include "Logging/LogMacros.h"
 #include "Streamline_TestCharacter.generated.h"
 
@@ -92,6 +93,8 @@ protected:
 	// APawn interface
 	virtual void SetupPlayerInputComponent(UInputComponent* InputComponent) override;
 	// End of APawn interface
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Quests", meta = (AllowPrivateAccess = "true"))
+	UQuest_Manager* QuestManager;
 
 public:
 	/** Returns Mesh1P subobject **/

@@ -44,7 +44,7 @@ AStreamline_TestCharacter::AStreamline_TestCharacter()
 
 	PhysicsHandleComponent = CreateDefaultSubobject<UPhysicsHandleComponent>(TEXT("PhysicsHandle"));
 
-
+	QuestManager = CreateDefaultSubobject<UQuest_Manager>(TEXT("QuestManager"));
 }
 
 void AStreamline_TestCharacter::BeginPlay()
@@ -263,7 +263,11 @@ void AStreamline_TestCharacter::PerformDash(const FInputActionValue& Value)
 	LaunchCharacter(DashDirection * DashDistance / DashDuration, true, true);
 
 	UE_LOG(LogTemp, Display, TEXT("Dashing to: %s"), *DashTargetLocation.ToString());
-
+	if (QuestManager)
+	{
+		QuestManager->ReportAbilityUse(TEXT("Dash"));
+		UE_LOG(LogTemp, Log, TEXT("Dash performed and reported to QuestManager."));
+	}
 	// Inicia el cooldown
 	bCanDash = false;
 	GetWorld()->GetTimerManager().SetTimer(DashCooldownTimer, [this]()
