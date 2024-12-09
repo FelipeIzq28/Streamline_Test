@@ -35,13 +35,23 @@ void UQuest_Manager::TickComponent(float DeltaTime, ELevelTick TickType, FActorC
 }
 void UQuest_Manager::InitializeQuests()
 {
-	UBaseQuest* DashQuest = NewObject<UBaseQuest>(this);
-	if (DashQuest)
+	TArray<TPair<FString, int32>> MissionConfigs = {
+	   TPair<FString, int32>(TEXT("Gravity Gun"), 7),
+	   TPair<FString, int32>(TEXT("Dash"), 5),
+	   TPair<FString, int32>(TEXT("Smoke Grenade"), 3),
+	   TPair<FString, int32>(TEXT("Molotov Grenade"), 3),
+	   TPair<FString, int32>(TEXT("Light Creation"), 15)
+	};
+	for (const auto& Config : MissionConfigs)
 	{
-		DashQuest->InitializeMission(TEXT("Dash"), 3);
-		DashQuest->OnMissionCompleted.AddDynamic(this, &UQuest_Manager::OnQuestCompleted);
-		Quests.Add(DashQuest);
-		UE_LOG(LogTemp, Log, TEXT("Added Dash Quest."));
+		UBaseQuest* Quest = NewObject<UBaseQuest>(this);
+		if (Quest)
+		{
+			Quest->InitializeMission(Config.Key, Config.Value);
+			Quest->OnMissionCompleted.AddDynamic(this, &UQuest_Manager::OnQuestCompleted);
+			Quests.Add(Quest);
+			UE_LOG(LogTemp, Log, TEXT("Added Quest: %s with Target: %d"), *Config.Key, Config.Value);
+		}
 	}
 
 	if (Quests.Num() > 0)

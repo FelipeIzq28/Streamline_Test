@@ -57,5 +57,6 @@ public:
 
 private:
     // Maneja el evento cuando una misión se completa
+    UFUNCTION()
     void OnQuestCompleted();
 };

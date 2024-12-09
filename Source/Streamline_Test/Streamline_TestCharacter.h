@@ -89,6 +89,8 @@ protected:
 
 	void CreateLight();
 	void DestroyLight();
+
+	void CompleteQuestMission(FString Quest);
 protected:
 	// APawn interface
 	virtual void SetupPlayerInputComponent(UInputComponent* InputComponent) override;

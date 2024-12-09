@@ -200,6 +200,7 @@ void AStreamline_TestCharacter::ReleaseObject(const FInputActionValue& Value)
 			FVector LaunchDirection = PlayerViewPointRotation.Vector();
 
 			GrabbedComponent->AddImpulse(LaunchDirection * GravityLaunchForce, NAME_None, true);
+			CompleteQuestMission("Gravity Gun");
 		}
 
 		// Liberar el componente del PhysicsHandle
@@ -249,7 +250,6 @@ void AStreamline_TestCharacter::PerformDash(const FInputActionValue& Value)
 {
 	if (!bCanDash)
 	{
-		UE_LOG(LogTemp, Warning, TEXT("Dash is on cooldown."));
 		return;
 	}
 
@@ -263,11 +263,7 @@ void AStreamline_TestCharacter::PerformDash(const FInputActionValue& Value)
 	LaunchCharacter(DashDirection * DashDistance / DashDuration, true, true);
 
 	UE_LOG(LogTemp, Display, TEXT("Dashing to: %s"), *DashTargetLocation.ToString());
-	if (QuestManager)
-	{
-		QuestManager->ReportAbilityUse(TEXT("Dash"));
-		UE_LOG(LogTemp, Log, TEXT("Dash performed and reported to QuestManager."));
-	}
+	CompleteQuestMission("Dash");
 	// Inicia el cooldown
 	bCanDash = false;
 	GetWorld()->GetTimerManager().SetTimer(DashCooldownTimer, [this]()
@@ -310,7 +306,7 @@ void AStreamline_TestCharacter::ThrowSmokeGrenade()
 	ThrowGrenade(SmokeGrenade);
 
 	bCanThrowSmokeGrenade = false;
-
+	CompleteQuestMission("Smoke Grenade");
 	GetWorld()->GetTimerManager().SetTimer(SmokeGrenadeCooldownTimer, [this]()
 		{
 			ResetCooldown(&bCanThrowSmokeGrenade, CurrentSmokeCooldown, SmokeGrenadeCooldown);
@@ -326,7 +322,7 @@ void AStreamline_TestCharacter::ThrowMolotovGrenade()
 	ThrowGrenade(MolotovGrenade);
 
 	bCanThrowMolotovGrenade = false;
-
+	CompleteQuestMission("Molotov Grenade");
 	GetWorld()->GetTimerManager().SetTimer(MolotovGrenadeCooldownTimer, [this]()
 		{
 			ResetCooldown(&bCanThrowMolotovGrenade, CurrentMolotovCooldown, MolotovGrenadeCooldown);
@@ -364,6 +360,7 @@ void AStreamline_TestCharacter::CreateLight()
 
 				// Posicionar la luz en el frente
 				DynamicLight->SetWorldLocation(LightWorldPosition);
+				CompleteQuestMission("Light Creation");
 			}
 		}
 	}
@@ -375,6 +372,14 @@ void AStreamline_TestCharacter::DestroyLight()
 		// Destruir el componente de luz
 		DynamicLight->DestroyComponent();
 		DynamicLight = nullptr;
+	}
+}
+void AStreamline_TestCharacter::CompleteQuestMission(FString Quest)
+{
+	if (QuestManager)
+	{
+		QuestManager->ReportAbilityUse(Quest);
+		UE_LOG(LogTemp, Log, TEXT("Reported to QuestManager."));
 	}
 }
 void AStreamline_TestCharacter::SetCooldowns(float DeltaTime)
