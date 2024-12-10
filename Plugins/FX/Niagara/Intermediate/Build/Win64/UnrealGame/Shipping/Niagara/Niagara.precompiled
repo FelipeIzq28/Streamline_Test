@@ -1,0 +1,25 @@
+{
+	"OutputFiles": [
+		"..\\..\\..\\x64\\UnrealGame\\Shipping\\Niagara\\Module.Niagara.1.cpp.obj",
+		"..\\..\\..\\x64\\UnrealGame\\Shipping\\Niagara\\Module.Niagara.2.cpp.obj",
+		"..\\..\\..\\x64\\UnrealGame\\Shipping\\Niagara\\Module.Niagara.3.cpp.obj",
+		"..\\..\\..\\x64\\UnrealGame\\Shipping\\Niagara\\Module.Niagara.4.cpp.obj",
+		"..\\..\\..\\x64\\UnrealGame\\Shipping\\Niagara\\Module.Niagara.5.cpp.obj",
+		"..\\..\\..\\x64\\UnrealGame\\Shipping\\Niagara\\Module.Niagara.6.cpp.obj",
+		"..\\..\\..\\x64\\UnrealGame\\Shipping\\Niagara\\Module.Niagara.7.cpp.obj",
+		"..\\..\\..\\x64\\UnrealGame\\Shipping\\Niagara\\Module.Niagara.8.cpp.obj",
+		"..\\..\\..\\x64\\UnrealGame\\Shipping\\Niagara\\Module.Niagara.9.cpp.obj",
+		"..\\..\\..\\x64\\UnrealGame\\Shipping\\Niagara\\Module.Niagara.10.cpp.obj",
+		"..\\..\\..\\x64\\UnrealGame\\Shipping\\Niagara\\Module.Niagara.11.cpp.obj",
+		"..\\..\\..\\x64\\UnrealGame\\Shipping\\Niagara\\Module.Niagara.12.cpp.obj",
+		"..\\..\\..\\x64\\UnrealGame\\Shipping\\Niagara\\Module.Niagara.13.cpp.obj",
+		"..\\..\\..\\x64\\UnrealGame\\Shipping\\Niagara\\Module.Niagara.14.cpp.obj",
+		"..\\..\\..\\x64\\UnrealGame\\Shipping\\Niagara\\Module.Niagara.15.cpp.obj",
+		"..\\..\\..\\x64\\UnrealGame\\Shipping\\Niagara\\Module.Niagara.16.cpp.obj",
+		"..\\..\\..\\x64\\UnrealGame\\Shipping\\Niagara\\NiagaraDataInterfaceVectorField.ispc_avx512skx.obj",
+		"..\\..\\..\\x64\\UnrealGame\\Shipping\\Niagara\\NiagaraDataInterfaceVectorField.ispc_avx2.obj",
+		"..\\..\\..\\x64\\UnrealGame\\Shipping\\Niagara\\NiagaraDataInterfaceVectorField.ispc_avx.obj",
+		"..\\..\\..\\x64\\UnrealGame\\Shipping\\Niagara\\NiagaraDataInterfaceVectorField.ispc_sse4.obj",
+		"..\\..\\..\\x64\\UnrealGame\\Shipping\\Niagara\\NiagaraDataInterfaceVectorField.ispc.obj"
+	]
+}

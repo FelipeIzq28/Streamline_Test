@@ -1,0 +1,8 @@
+{
+	"BuildId": "33043543",
+	"Modules": 
+	{
+		"NiagaraSimCaching": "UnrealEditor-NiagaraSimCaching.dll",
+		"NiagaraSimCachingEditor": "UnrealEditor-NiagaraSimCachingEditor.dll"
+	}
+}
