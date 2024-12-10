@@ -1,5 +1,22 @@
 // Copyright Epic Games, Inc. All Rights Reserved.
 
+/**
+ * @file Streamline_TestCharacter.h
+ * @brief Header file for the `AStreamline_TestCharacter` class, defining a versatile player character with enhanced input capabilities, gravity gun mechanics, dash functionality, grenade abilities, and quest management.
+ * @author Felipe Izquierdo
+ * @date 09/12/2024
+ *
+ * This file defines the `AStreamline_TestCharacter` class, which serves as the primary player character in the game.
+ * It integrates advanced mechanics such as:
+ * - Gravity gun functionality for interacting with objects.
+ * - Dash mechanics for swift movement.
+ * - Grenade-throwing mechanics (e.g., smoke and Molotov grenades) with cooldowns.
+ * - Quest management via the `UQuest_Manager` component.
+ * - Light creation and destruction for dynamic illumination.
+ *
+ * The character is designed to utilize the Enhanced Input System for flexible input handling.
+ */
+
 #pragma once
 
 #include "CoreMinimal.h"
@@ -42,18 +59,23 @@ class AStreamline_TestCharacter : public ACharacter
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Input, meta = (AllowPrivateAccess = "true"))
 	UInputAction* MoveAction;
 
+	/** Grab Input Action */
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Input, meta = (AllowPrivateAccess = "true"))
 	UInputAction* GrabAction;
 
+	/** Dash Input Action */
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Input, meta = (AllowPrivateAccess = "true"))
 	UInputAction* DashAction;
 
+	/** Smoke Grenade Input Action */
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Input, meta = (AllowPrivateAccess = "true"))
 	UInputAction* SmokeGrenadeAction;
 
+	/** Molotov Grenade Input Action */
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Input, meta = (AllowPrivateAccess = "true"))
 	UInputAction* MolotovGrenadeAction;
 
+	/** Light Grenade Input Action */
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Input, meta = (AllowPrivateAccess = "true"))
 	UInputAction* CreateLightAction ;
 public:
@@ -65,6 +87,7 @@ public:
 	/** Returns FirstPersonCameraComponent subobject **/
 	UCameraComponent* GetFirstPersonCameraComponent() const { return FirstPersonCameraComponent; }
 
+	// Cooldown accessors
 	UFUNCTION(BlueprintPure, Category = "Cooldown")
 	float GetDashCooldown() const;
 
@@ -90,21 +113,27 @@ protected:
 	/** Called for looking input */
 	void Look(const FInputActionValue& Value);
 
+	/** Called for grabbing input */
 	void Grab(const FInputActionValue& Value);
 
+	/** Called for releasing input */
 	void ReleaseObject(const FInputActionValue& Value);
 
+	/** Called for dash input */
 	void PerformDash(const FInputActionValue& Value);
 
+	/** Called for throw grenade input */
 	void ThrowGrenade(TSubclassOf<ABase_Grenade> GrenadeClass);
 
 	void ThrowSmokeGrenade();
 
 	void ThrowMolotovGrenade();
 
+	/** Creates and destroy a dynamic light. */
 	void CreateLight();
 	void DestroyLight();
 
+	/** Reference to the Quest Manager. */
 	void CompleteQuestMission(FString Quest);
 protected:
 	// APawn interface
@@ -112,8 +141,6 @@ protected:
 	// End of APawn interface
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Quests", meta = (AllowPrivateAccess = "true"))
 	UQuest_Manager* QuestManager;
-
-
 
 private:
 	//Gravity Gun Variables
@@ -134,6 +161,7 @@ private:
 	UPhysicsHandleComponent* GetPhysicsHandle() const;
 
 	bool GetGrabbableInReach(FHitResult& OutHitResult) const;
+
 	//Dash Variables
 	UPROPERTY(EditAnywhere, Category = "Dash")
 	float DashDistance = 600.0f;
@@ -153,7 +181,7 @@ private:
 
 	FTimerHandle DashCooldownTimer;
 
-	//Grenades
+	//Grenades variables
 	UPROPERTY(EditAnywhere, Category = "Grenades")
 	TSubclassOf<class ABase_Grenade> SmokeGrenade;
 
@@ -186,7 +214,7 @@ private:
 	void SetCooldowns(float DeltaTime);
 
 
-	//Light Creation
+	//Light Creation Variables
 	UPROPERTY(EditAnywhere, Category = "Light Creation")
 	float LightDistance;
 

@@ -1,5 +1,11 @@
 // Copyright Epic Games, Inc. All Rights Reserved.
-
+/**
+ * @file Streamline_TestCharacter.cpp
+ * @brief Implementation of the `AStreamline_TestCharacter` class, providing advanced player character mechanics such as gravity gun interactions, dashing, grenade usage, quest tracking, and dynamic lighting.
+ * @details This file defines the core logic for the player character, including input bindings, physics interactions, and various abilities. It also handles cooldown systems for abilities and integrates with the `QuestManager` for tracking progress on specific quests.
+ * @author Felipe Izquierdo
+ * @date 09/12/2024
+ */
 #include "Streamline_TestCharacter.h"
 #include "Streamline_TestProjectile.h"
 #include "Animation/AnimInstance.h"
@@ -42,8 +48,10 @@ AStreamline_TestCharacter::AStreamline_TestCharacter()
 	//Mesh1P->SetRelativeRotation(FRotator(0.9f, -19.19f, 5.2f));
 	Mesh1P->SetRelativeLocation(FVector(-30.f, 0.f, -150.f));
 
+	// Initialize the physics handle
 	PhysicsHandleComponent = CreateDefaultSubobject<UPhysicsHandleComponent>(TEXT("PhysicsHandle"));
 
+	// Initialize the quest manager
 	QuestManager = CreateDefaultSubobject<UQuest_Manager>(TEXT("QuestManager"));
 }
 
@@ -60,6 +68,7 @@ void AStreamline_TestCharacter::BeginPlay()
 		}
 	}
 
+	// Initialize cooldown values
 	CurrentSmokeCooldown = SmokeGrenadeCooldown;
 	CurrentMolotovCooldown = MolotovGrenadeCooldown;
 	CurrentDashCooldown = DashCooldown;
@@ -74,20 +83,16 @@ void AStreamline_TestCharacter::Tick(float DeltaTime)
 	{
 		FVector PlayerViewPointLocation;
 		FRotator PlayerViewPointRotation;
-
-		// Obtén la ubicación y rotación de la cámara del jugador
 		GetWorld()->GetFirstPlayerController()->GetPlayerViewPoint(PlayerViewPointLocation, PlayerViewPointRotation);
 
-		// Calcula la posición objetivo para el objeto agarrado
 		FVector TargetLocation = PlayerViewPointLocation + PlayerViewPointRotation.Vector() * HoldDistance;
 
-		// Actualiza la posición y rotación del Physics Handle
 		PhysicsHandle->SetTargetLocationAndRotation(TargetLocation, PlayerViewPointRotation);
 	}
+
+	// Update ability cooldowns
 	SetCooldowns(DeltaTime);
 }
-
-
 
 //////////////////////////////////////////////////////////////////////////// Input
 
@@ -117,6 +122,7 @@ void AStreamline_TestCharacter::SetupPlayerInputComponent(UInputComponent* Playe
 		EnhancedInputComponent->BindAction(SmokeGrenadeAction, ETriggerEvent::Triggered, this, &AStreamline_TestCharacter::ThrowSmokeGrenade);
 		EnhancedInputComponent->BindAction(MolotovGrenadeAction, ETriggerEvent::Triggered, this, &AStreamline_TestCharacter::ThrowMolotovGrenade);
 
+		//Create Lights
 		EnhancedInputComponent->BindAction(CreateLightAction, ETriggerEvent::Started, this, &AStreamline_TestCharacter::CreateLight);
 		EnhancedInputComponent->BindAction(CreateLightAction, ETriggerEvent::Completed, this, &AStreamline_TestCharacter::DestroyLight);
 	}
@@ -151,6 +157,12 @@ void AStreamline_TestCharacter::Look(const FInputActionValue& Value)
 		AddControllerPitchInput(LookAxisVector.Y);
 	}
 }
+/**
+ * @brief Attempts to grab an object within reach.
+ * @param Value Unused parameter in this context, as the action is triggered by input.
+ * @details Uses a physics handle to grab the first object within the specified grab radius and distance.
+ * The grabbed object is detached from any parent actors and is tagged as "Grabbed."
+ */
 void AStreamline_TestCharacter::Grab(const FInputActionValue& Value)
 {
 	UPhysicsHandleComponent* PhysicsHandle = GetPhysicsHandle();
@@ -161,7 +173,6 @@ void AStreamline_TestCharacter::Grab(const FInputActionValue& Value)
 	FHitResult HitResult;
 	if (GetGrabbableInReach(HitResult))
 	{
-
 		UPrimitiveComponent* HitComponent = HitResult.GetComponent();
 		HitComponent->SetSimulatePhysics(true);
 		HitComponent->WakeAllRigidBodies();
@@ -179,6 +190,12 @@ void AStreamline_TestCharacter::Grab(const FInputActionValue& Value)
 
 	}
 }
+/**
+ * @brief Releases the currently grabbed object.
+ * @param Value Unused parameter in this context, as the action is triggered by input.
+ * @details If a component is being held by the physics handle, it is released, given an impulse in the forward direction,
+ * and the "Grabbed" tag is removed from the actor. Also reports this action to the quest system.
+ */
 void AStreamline_TestCharacter::ReleaseObject(const FInputActionValue& Value)
 {
 	UPhysicsHandleComponent* PhysicsHandle = GetPhysicsHandle();
@@ -190,10 +207,7 @@ void AStreamline_TestCharacter::ReleaseObject(const FInputActionValue& Value)
 
 		if (GrabbedActor)
 		{
-			// Remover etiqueta "Grabbed"
 			GrabbedActor->Tags.Remove("Grabbed");
-			UE_LOG(LogTemp, Display, TEXT("Released Actor: %s"), *GrabbedActor->GetActorNameOrLabel());
-			// Calcula la dirección de lanzamiento
 			FVector PlayerViewPointLocation;
 			FRotator PlayerViewPointRotation;
 			GetWorld()->GetFirstPlayerController()->GetPlayerViewPoint(PlayerViewPointLocation, PlayerViewPointRotation);
@@ -202,8 +216,6 @@ void AStreamline_TestCharacter::ReleaseObject(const FInputActionValue& Value)
 			GrabbedComponent->AddImpulse(LaunchDirection * GravityLaunchForce, NAME_None, true);
 			CompleteQuestMission("Gravity Gun");
 		}
-
-		// Liberar el componente del PhysicsHandle
 		PhysicsHandle->ReleaseComponent();
 	}
 	else
@@ -211,6 +223,11 @@ void AStreamline_TestCharacter::ReleaseObject(const FInputActionValue& Value)
 		UE_LOG(LogTemp, Warning, TEXT("No component to release."));
 	}
 }
+/**
+ * @brief Retrieves the physics handle component used for object interactions.
+ * @return A pointer to the `UPhysicsHandleComponent` if found, otherwise nullptr.
+ * @details Logs a warning if the physics handle is not present.
+ */
 UPhysicsHandleComponent* AStreamline_TestCharacter::GetPhysicsHandle() const
 {
 	UPhysicsHandleComponent* Result = FindComponentByClass<UPhysicsHandleComponent>();
@@ -220,15 +237,18 @@ UPhysicsHandleComponent* AStreamline_TestCharacter::GetPhysicsHandle() const
 	}
 	return Result;
 }
-
+/**
+ * @brief Performs a sphere sweep to detect if an object is within grabbing range.
+ * @param OutHitResult Reference to store the hit result if an object is found.
+ * @return True if an object is within range, false otherwise.
+ * @details Uses a sphere to check for grabbable objects and visualizes the reach with debug lines and spheres.
+ */
 bool AStreamline_TestCharacter::GetGrabbableInReach(FHitResult& OutHitResult) const
 {
 	FVector PlayerViewpointLocation;
 	FRotator PlayerViewpointRotation;
 
 	GetWorld()->GetFirstPlayerController()->GetPlayerViewPoint(PlayerViewpointLocation, PlayerViewpointRotation);
-
-	// Calcula el vector final basado en la dirección en que mira el jugador
 	FVector Start = PlayerViewpointLocation;
 	FVector End = Start + PlayerViewpointRotation.Vector() * MaxGrabDistance;
 	DrawDebugLine(GetWorld(), Start, End, FColor::Red);
@@ -246,49 +266,48 @@ bool AStreamline_TestCharacter::GetGrabbableInReach(FHitResult& OutHitResult) co
 	);
 	return HasHit;
 }
+/**
+ * @brief Performs a dash in the forward direction.
+ * @param Value Unused parameter in this context, as the action is triggered by input.
+ * @details Moves the character rapidly in the forward direction using the `LaunchCharacter` function.
+ * Adds a cooldown before the dash can be used again and reports the action to the quest system.
+ */
 void AStreamline_TestCharacter::PerformDash(const FInputActionValue& Value)
 {
 	if (!bCanDash)
 	{
 		return;
 	}
-
-	// Obtén la dirección hacia adelante del personaje
 	FVector DashDirection = GetActorForwardVector();
-
-	// Calcula la ubicación de destino del Dash
 	FVector DashTargetLocation = GetActorLocation() + DashDirection * DashDistance;
-
-	// Mueve al personaje
 	LaunchCharacter(DashDirection * DashDistance / DashDuration, true, true);
-
-	UE_LOG(LogTemp, Display, TEXT("Dashing to: %s"), *DashTargetLocation.ToString());
 	CompleteQuestMission("Dash");
-	// Inicia el cooldown
 	bCanDash = false;
 	GetWorld()->GetTimerManager().SetTimer(DashCooldownTimer, [this]()
 		{
 			ResetCooldown(&bCanDash, CurrentDashCooldown, DashCooldown);
 		}, DashCooldown, false);
 }
+/**
+ * @brief Throws a grenade of the specified class.
+ * @param GrenadeClass The class of the grenade to spawn.
+ * @details Spawns a grenade actor in front of the player and launches it in the forward direction with the specified force.
+ */
 void AStreamline_TestCharacter::ThrowGrenade(TSubclassOf<ABase_Grenade> GrenadeClass)
 {
 	if (GrenadeClass)
 	{
 		FVector PlayerViewPointLocation;
 		FRotator PlayerViewPointRotation;
-
-		// Obtén la ubicación y rotación de la cámara
 		GetWorld()->GetFirstPlayerController()->GetPlayerViewPoint(PlayerViewPointLocation, PlayerViewPointRotation);
 
-		FVector SpawnLocation = PlayerViewPointLocation + PlayerViewPointRotation.Vector() * 100.0f; // Ajusta esta distancia
+		FVector SpawnLocation = PlayerViewPointLocation + PlayerViewPointRotation.Vector() * 100.0f;
 		FVector LaunchDirection = PlayerViewPointRotation.Vector();
 
 		FActorSpawnParameters SpawnParams;
 		SpawnParams.Owner = this;
 		SpawnParams.Instigator = GetInstigator();
 
-		// Crea y configura la granada
 		ABase_Grenade* SpawnedGrenade = GetWorld()->SpawnActor<ABase_Grenade>(GrenadeClass, SpawnLocation, PlayerViewPointRotation, SpawnParams);
 		if (SpawnedGrenade)
 		{
@@ -296,11 +315,14 @@ void AStreamline_TestCharacter::ThrowGrenade(TSubclassOf<ABase_Grenade> GrenadeC
 		}
 	}
 }
+/**
+ * @brief Throws a smoke grenade.
+ * @details Spawns and launches a smoke grenade if the cooldown allows it. Triggers the cooldown timer and reports the action to the quest system.
+ */
 void AStreamline_TestCharacter::ThrowSmokeGrenade()
 {
 	if (!bCanThrowSmokeGrenade)
 	{
-		UE_LOG(LogTemp, Warning, TEXT("Smoke grenade is on cooldown."));
 		return;
 	}
 	ThrowGrenade(SmokeGrenade);
@@ -312,11 +334,14 @@ void AStreamline_TestCharacter::ThrowSmokeGrenade()
 			ResetCooldown(&bCanThrowSmokeGrenade, CurrentSmokeCooldown, SmokeGrenadeCooldown);
 		}, SmokeGrenadeCooldown, false);
 }
+/**
+ * @brief Handles the action of throwing a Molotov grenade.
+ * @details Checks if the ability is available, spawns the grenade, and applies a cooldown.
+ */
 void AStreamline_TestCharacter::ThrowMolotovGrenade()
 {
 	if (!bCanThrowMolotovGrenade)
 	{
-		UE_LOG(LogTemp, Warning, TEXT("Flash grenade is on cooldown."));
 		return;
 	}
 	ThrowGrenade(MolotovGrenade);
@@ -328,48 +353,59 @@ void AStreamline_TestCharacter::ThrowMolotovGrenade()
 			ResetCooldown(&bCanThrowMolotovGrenade, CurrentMolotovCooldown, MolotovGrenadeCooldown);
 		}, SmokeGrenadeCooldown, false);
 }
+/**
+ * @brief Resets the cooldown state for a specific ability.
+ * @param bCanThrow Pointer to the boolean tracking whether the ability can be used.
+ * @param CurrentCooldown Reference to the current cooldown timer value.
+ * @param Cooldown Reference to the maximum cooldown value.
+ * @details This function sets the ability to be usable again and resets the cooldown timer to its maximum value.
+ */
 void AStreamline_TestCharacter::ResetCooldown(bool* bCanThrow, float& CurrentCooldown, float& Cooldown)
 {
 	if (bCanThrow)
 	{
 		*bCanThrow = true;
 		CurrentCooldown = Cooldown;
-		UE_LOG(LogTemp, Display, TEXT("Grenade cooldown reset."));
 	}
 }
+/**
+ * @brief Creates a dynamic point light in front of the player.
+ * @details The light is created at a distance defined by `LightDistance` and aligned with the direction the player is facing.
+ *          The light's intensity and color are configurable through properties.
+ *          This ability also tracks quest progress for "Light Creation."
+ */
 void AStreamline_TestCharacter::CreateLight()
 {
 	if (!DynamicLight)
 	{
-		// Crear dinámicamente el componente de luz
 		DynamicLight = NewObject<UPointLightComponent>(this);
 		if (DynamicLight)
 		{
 			DynamicLight->RegisterComponent();
 			DynamicLight->AttachToComponent(RootComponent, FAttachmentTransformRules::KeepWorldTransform);
-
-			// Configurar la luz
-			DynamicLight->SetIntensity(LightIntensity); // Intensidad de la luz
-			DynamicLight->SetLightColor(LightColor); // Color de la luz
+			DynamicLight->SetIntensity(LightIntensity); 
+			DynamicLight->SetLightColor(LightColor); 
 			APlayerController* PlayerController = Cast<APlayerController>(GetController());
 			if (PlayerController)
 			{
-				FRotator CameraRotation = PlayerController->GetControlRotation(); // Rotación de la cámara
-				FVector ForwardVector = CameraRotation.Vector(); // Dirección hacia adelante
+				FRotator CameraRotation = PlayerController->GetControlRotation();
+				FVector ForwardVector = CameraRotation.Vector();
 				FVector LightWorldPosition = GetActorLocation() + (ForwardVector * LightDistance);
 
-				// Posicionar la luz en el frente
 				DynamicLight->SetWorldLocation(LightWorldPosition);
 				CompleteQuestMission("Light Creation");
 			}
 		}
 	}
 }
+/**
+ * @brief Destroys the currently active dynamic light.
+ * @details Ensures that the light component is properly destroyed and sets the reference to nullptr.
+ */
 void AStreamline_TestCharacter::DestroyLight()
 {
 	if (DynamicLight)
 	{
-		// Destruir el componente de luz
 		DynamicLight->DestroyComponent();
 		DynamicLight = nullptr;
 	}
@@ -379,9 +415,14 @@ void AStreamline_TestCharacter::CompleteQuestMission(FString Quest)
 	if (QuestManager)
 	{
 		QuestManager->ReportAbilityUse(Quest);
-		UE_LOG(LogTemp, Log, TEXT("Reported to QuestManager."));
 	}
 }
+/**
+ * @brief Updates the cooldown timers for all abilities.
+ * @param DeltaTime Time elapsed since the last frame.
+ * @details Reduces the current cooldown values for abilities that are on cooldown.
+ *          Ensures that abilities are only affected if they are currently disabled.
+ */
 void AStreamline_TestCharacter::SetCooldowns(float DeltaTime)
 {
 	if (!bCanThrowSmokeGrenade)
@@ -397,16 +438,29 @@ void AStreamline_TestCharacter::SetCooldowns(float DeltaTime)
 		CurrentDashCooldown -= DeltaTime;
 	}
 }
+/**
+ * @brief Retrieves the current cooldown value for the Dash ability.
+ * @return The remaining cooldown time for the Dash ability.
+ * @details This function is intended for use in widgets to display the cooldown visually.
+ */
 float AStreamline_TestCharacter::GetDashCooldown() const
 {
 	return CurrentDashCooldown;
 }
-
+/**
+ * @brief Retrieves the current cooldown value for the Smoke Grenade ability.
+ * @return The remaining cooldown time for the Smoke Grenade ability.
+ * @details This function is intended for use in widgets to display the cooldown visually.
+ */
 float AStreamline_TestCharacter::GetSmokeCooldown() const
 {
 	return CurrentSmokeCooldown;
 }
-
+/**
+ * @brief Retrieves the current cooldown value for the Molotov Grenade ability.
+ * @return The remaining cooldown time for the Molotov Grenade ability.
+ * @details This function is intended for use in widgets to display the cooldown visually.
+ */
 float AStreamline_TestCharacter::GetMolotovCooldown() const
 {
 	return CurrentMolotovCooldown;
