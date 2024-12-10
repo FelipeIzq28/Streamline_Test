@@ -59,14 +59,29 @@ class AStreamline_TestCharacter : public ACharacter
 public:
 	AStreamline_TestCharacter();
 
-protected:
-	virtual void BeginPlay();
+public:
+	/** Returns Mesh1P subobject **/
+	USkeletalMeshComponent* GetMesh1P() const { return Mesh1P; }
+	/** Returns FirstPersonCameraComponent subobject **/
+	UCameraComponent* GetFirstPersonCameraComponent() const { return FirstPersonCameraComponent; }
+
+	UFUNCTION(BlueprintPure, Category = "Cooldown")
+	float GetDashCooldown() const;
+
+	UFUNCTION(BlueprintPure, Category = "Cooldown")
+	float GetSmokeCooldown() const;
+
+	UFUNCTION(BlueprintPure, Category = "Cooldown")
+	float GetMolotovCooldown() const;
 
 public:
 	virtual void Tick(float DeltaTime) override;
 	/** Look Input Action */
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Input, meta = (AllowPrivateAccess = "true"))
 	class UInputAction* LookAction;
+
+protected:
+	virtual void BeginPlay();
 
 protected:
 	/** Called for movement input */
@@ -98,20 +113,7 @@ protected:
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Quests", meta = (AllowPrivateAccess = "true"))
 	UQuest_Manager* QuestManager;
 
-public:
-	/** Returns Mesh1P subobject **/
-	USkeletalMeshComponent* GetMesh1P() const { return Mesh1P; }
-	/** Returns FirstPersonCameraComponent subobject **/
-	UCameraComponent* GetFirstPersonCameraComponent() const { return FirstPersonCameraComponent; }
 
-	UFUNCTION(BlueprintPure, Category = "Cooldown")
-	float GetDashCooldown() const;
-
-	UFUNCTION(BlueprintPure, Category = "Cooldown")
-	float GetSmokeCooldown() const;
-
-	UFUNCTION(BlueprintPure, Category = "Cooldown")
-	float GetMolotovCooldown() const;
 
 private:
 	//Gravity Gun Variables

@@ -51,7 +51,9 @@ public:
     // Devuelve una descripción completa de la misión (nombre y progreso)
     UFUNCTION(BlueprintCallable, Category = "Quests")
     FString GetCurrentQuestDescription() const;
-
+public:
+    // Called every frame
+    virtual void TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction) override;
 protected:
 	// Called when the game starts
 	virtual void BeginPlay() override;
@@ -66,10 +68,6 @@ protected:
 
     // Índice de la misión actual
     int32 CurrentQuestIndex;
-
-public:	
-	// Called every frame
-	virtual void TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction) override;
 
 private:
     // Maneja el evento cuando una misión se completa

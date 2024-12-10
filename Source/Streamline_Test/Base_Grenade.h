@@ -14,6 +14,11 @@ class STREAMLINE_TEST_API ABase_Grenade : public AActor
 public:	
 	// Sets default values for this actor's properties
 	ABase_Grenade();
+public:
+    // Called every frame
+    virtual void Tick(float DeltaTime) override;
+
+    virtual void InitializeGrenade(FVector LaunchDirection, float LaunchForce);
 
 protected:
 	// Called when the game starts or when spawned
@@ -35,9 +40,5 @@ protected:
 
     // Temporizador para la explosión
     FTimerHandle ExplosionTimer;
-public:	
-	// Called every frame
-	virtual void Tick(float DeltaTime) override;
 
-    virtual void InitializeGrenade(FVector LaunchDirection, float LaunchForce);
 };
