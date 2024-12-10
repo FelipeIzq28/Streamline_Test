@@ -36,6 +36,22 @@ public:
     UPROPERTY(BlueprintAssignable, Category = "Quests")
     FOnAllQuestsCompleted OnAllQuestsCompleted;
 
+
+    UFUNCTION(BlueprintCallable, Category = "Quests")
+    FString GetCurrentQuestName() const;
+
+    // Devuelve el progreso actual de la misión
+    UFUNCTION(BlueprintCallable, Category = "Quests")
+    int32 GetCurrentQuestProgress() const;
+
+    // Devuelve el objetivo total de la misión
+    UFUNCTION(BlueprintCallable, Category = "Quests")
+    int32 GetCurrentQuestTarget() const;
+
+    // Devuelve una descripción completa de la misión (nombre y progreso)
+    UFUNCTION(BlueprintCallable, Category = "Quests")
+    FString GetCurrentQuestDescription() const;
+
 protected:
 	// Called when the game starts
 	virtual void BeginPlay() override;

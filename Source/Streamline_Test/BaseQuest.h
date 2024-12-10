@@ -41,6 +41,9 @@ public:
     UFUNCTION(BlueprintCallable, Category = "Mission")
     int32 GetTargetCount() const;
 
+    UFUNCTION(BlueprintCallable, Category = "Mission")
+    FString GetQuestName() const;
+
     // Delegado que notifica cuando la misión está completa
     UPROPERTY(BlueprintAssignable, Category = "Mission")
     FOnMissionCompleted OnMissionCompleted;

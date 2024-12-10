@@ -22,7 +22,7 @@ void AStreamline_TestPlayerController::BeginPlay()
         HUDWidget = CreateWidget<UUserWidget>(this, HUDWidgetClass);
         if (HUDWidget)
         {
-            HUDWidget->AddToViewport(10);
+            HUDWidget->AddToViewport();
         }
     }
 }

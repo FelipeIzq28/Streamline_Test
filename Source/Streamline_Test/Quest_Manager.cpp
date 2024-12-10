@@ -85,15 +85,54 @@ void UQuest_Manager::ReportAbilityUse(const FString& AbilityName)
 		UE_LOG(LogTemp, Log, TEXT("Reported ability use: %s to CurrentQuest."), *AbilityName);
 	}
 }
+void UQuest_Manager::OnQuestCompleted()
+{
+	UE_LOG(LogTemp, Log, TEXT("Quest Completed: %s"), *CurrentQuest->AbilityName);
+	StartNextQuest();
+}
 
 UBaseQuest* UQuest_Manager::GetCurrentQuest() const
 {
 	return CurrentQuest;
 }
 
-void UQuest_Manager::OnQuestCompleted()
+FString UQuest_Manager::GetCurrentQuestName() const
 {
-	UE_LOG(LogTemp, Log, TEXT("Quest Completed: %s"), *CurrentQuest->AbilityName);
-	StartNextQuest();
+	if (CurrentQuest)
+	{
+		return CurrentQuest->GetQuestName();
+	}
+	return TEXT("No Active Quest");
 }
+
+int32 UQuest_Manager::GetCurrentQuestProgress() const
+{
+	if (CurrentQuest)
+	{
+		return CurrentQuest->GetCurrentProgress();
+	}
+	return 0;
+}
+
+int32 UQuest_Manager::GetCurrentQuestTarget() const
+{
+	if (CurrentQuest)
+	{
+		return CurrentQuest->GetTargetCount();
+	}
+	return 0;
+}
+
+FString UQuest_Manager::GetCurrentQuestDescription() const
+{
+	if (CurrentQuest)
+	{
+		return FString::Printf(TEXT("%s: %d/%d"),
+			*CurrentQuest->GetQuestName(),
+			CurrentQuest->GetCurrentProgress(),
+			CurrentQuest->GetTargetCount());
+	}
+	return TEXT("No Active Quest");
+}
+
 

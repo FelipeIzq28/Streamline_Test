@@ -50,3 +50,8 @@ int32 UBaseQuest::GetTargetCount() const
 {
 	return TargetCount;
 }
+
+FString UBaseQuest::GetQuestName() const
+{
+	return AbilityName;
+}
